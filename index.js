@@ -18,7 +18,7 @@ dayjs.extend(customParseFormat);
 
 
 var lastUpdated = {
-    min: dayjs().subtract(1440, 'minute').toISOString(),
+    min: dayjs().subtract(180, 'minute').toISOString(),
     max: dayjs().toISOString()
 }
 
@@ -37,8 +37,8 @@ const prettyDate = $date => {
 
 app.get('/', async (req, res) => {
 
-let tsw = req.query.tsw
-   // let tsw = req.headers.tsw
+// let tsw = req.query.tsw
+   let tsw = req.headers.tsw
   
 
     if (tsw == process.env.SECRET_VALUE) {
