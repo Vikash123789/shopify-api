@@ -3,7 +3,7 @@ const express = require("express")
 let axios = require("axios")
 const app = express();
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-const creds = require('./secret/love-pengolin-6d1b783b5591.json')
+const creds = require('./secret/extreme-storm-369107-c2750b32474a.json')
 const _ = require('lodash');
 const dayjs = require('dayjs');
 const getSymbolFromCurrency = require('currency-symbol-map');
@@ -18,7 +18,7 @@ dayjs.extend(customParseFormat);
 
 
 var lastUpdated = {
-    min: dayjs().subtract(35, 'minute').toISOString(),
+    min: dayjs().subtract(65, 'minute').toISOString(),
     max: dayjs().toISOString()
 }
 
@@ -37,10 +37,15 @@ const prettyDate = $date => {
 
 app.get('/', async (req, res) => {
 
+
     let tsw = req.headers.tsw
-    console.log(tsw, process.env.SECRET_VALUE)
+  
 
     if (tsw == process.env.SECRET_VALUE) {
+
+        let wrapperFunction = async () =>{
+
+     
 
         let removedRows = [];
 
@@ -61,7 +66,8 @@ app.get('/', async (req, res) => {
                             "Customer Name": item.customer.default_address.name,
                             "Customer Email": item.customer.email,
                             "Currency": item.customer.currency,
-                            "Price": getSymbolFromCurrency(item.customer.currency) +""+ item.line_items[i].price  ,
+                            "Price":  item.line_items[i].price  ,
+                            "Total Discount" : item.line_items[i].total_discount ? item.line_items[i].total_discount : 0 ,
                             "Quantity": item.line_items[i].quantity,
                             "Item Name": item.line_items[i].title,
                             "Item SKU": item.line_items[i].sku,
@@ -71,7 +77,8 @@ app.get('/', async (req, res) => {
                             "Cancelled": (item.cancelled_at == null) ? "No" : "Yes",
                             "City": item.customer.default_address.city,
                             "Fullfiment Date": (item.fulfillments.length == 0) ? null : prettyDate(item.fulfillments[0].created_at),
-                            "Delivery Type": (item.fulfillments.length == 0) ? null : item.fulfillments[0].tracking_company,
+                            "Delivery Vendor": (item.fulfillments.length == 0) ? null : item.fulfillments[0].tracking_company,
+                            "Delivery Type": item.shipping_lines[0].title ?  item.shipping_lines[0].title : null  ,
                             "Delivered Date": (item.fulfillments.length == 0) ? null : (item.fulfillments[0].shipment_status == "delivered")? prettyDate(item.fulfillments[0].updated_at) : null,
                             "Fullfiment QTY": item.line_items[i].fulfillable_quantity,
                             "Remarks (Reason for cancellation/ delay)  ": item.cancel_reason,
@@ -104,6 +111,7 @@ app.get('/', async (req, res) => {
             "Customer Email",
             "Currency",
             "Price",
+            "Total Discount",
             "Quantity",
             "Item Name",
             "Item SKU",
@@ -113,6 +121,7 @@ app.get('/', async (req, res) => {
             "Cancelled",
             "City",
             "Fullfiment Date",
+            "Delivery Vendor",
             "Delivery Type",
             "Delivered Date",
             "Fullfiment QTY",
@@ -195,16 +204,18 @@ app.get('/', async (req, res) => {
         console.log(newData)
         await sheet.addRows(newData)
 
+    }
 
+    wrapperFunction()
 
         let status = {
             success: 'ok',
-            data: {
-                foundRows: alreadyExists,
-                addedRows: newData,
-                removedRows: removedRows
+            // data: {
+            //     foundRows: alreadyExists,
+            //     addedRows: newData,
+            //     removedRows: removedRows
 
-            }
+            // }
         }
 
 
