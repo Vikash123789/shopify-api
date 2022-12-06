@@ -18,7 +18,7 @@ dayjs.extend(customParseFormat);
 
 
 var lastUpdated = {
-    min: dayjs().subtract(65, 'minute').toISOString(),
+    min: dayjs().subtract(1440*2, 'minute').toISOString(),
     max: dayjs().toISOString()
 }
 
@@ -95,7 +95,7 @@ app.get('/', async (req, res) => {
 
         jsonData()
 
-        const doc = new GoogleSpreadsheet('1qmsspQd_Vj66o87UR2OULf2Og14GOMJzTZoOGAi7gwA');
+        const doc = new GoogleSpreadsheet('1UKHQJuZPgzWw6nhGn3p5XIw5aloQr1pVFnE1E46rW0c');
         await doc.useServiceAccountAuth(creds);
         await doc.loadInfo();
         console.log(doc.title);
@@ -204,23 +204,23 @@ app.get('/', async (req, res) => {
         console.log(newData)
         await sheet.addRows(newData)
 
-    }
+    
 
-    wrapperFunction()
-
-        let status = {
-            success: 'ok',
-            // data: {
-            //     foundRows: alreadyExists,
-            //     addedRows: newData,
-            //     removedRows: removedRows
-
-            // }
+    
+    let status = {
+        success: 'ok',
+        data: {
+                foundRows: alreadyExists,
+                addedRows: newData,
+                removedRows: removedRows
+            
+            }
         }
-
-
-
+        
         return res.send(status)
+    }
+        
+        wrapperFunction()
 
     } else {
 
