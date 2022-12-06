@@ -37,8 +37,8 @@ const prettyDate = $date => {
 
 app.get('/', async (req, res) => {
 
-
-    let tsw = req.headers.tsw
+let tsw = req.query.tsw
+   // let tsw = req.headers.tsw
   
 
     if (tsw == process.env.SECRET_VALUE) {
